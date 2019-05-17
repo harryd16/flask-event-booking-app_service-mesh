@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    {% block head %}
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.1/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+
+    <title>{{ title }}</title>
+    {% endblock %}
+</head>
+<body>
+    <header>    
+        <nav class="navbar navbar-light bg-light justify-content-between">
+            <a class="navbar-brand link-unstyled" href="/">
+                <img class="unselectable" src="{{ url_for('static', filename='logo_pulse_emoji.png') }}" height="50px" alt="UOW Events Logo">
+                &nbsp;&nbsp;&nbsp;&nbsp;
+                Events @ UOW
+            </a>
+            <form class="form-inline">
+                <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+                <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+            </form>
+        </nav>
+    </header>
+    
+    
+    <!-- vertical navbar // @media change to drop down for mobile -->
+    <div class="container-fluid" style="padding:20px">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="list-group" data-spy="affix" data-offset-top="">
+                    <a href="/" class="list-group-item list-group-item-action {{ navbar_events_active }}">
+                        All Events
+                    </a>
+                    <a href="my_calendar" class="list-group-item list-group-item-action {{ navbar_calendar_active }}">
+                        My Calendar
+                    </a>
+                    <a href="manage_events" class="list-group-item list-group-item-action {{ navbar_manage_events_active }}">
+                        Manage Events (Staff)
+                    </a>
+                    <a href="#" class="list-group-item list-group-item-action {{ navbar_manage_users_active }}">
+                        Manage Users (Super User)
+                    </a>
+                </div>
+            </div>
+            <div class="col-md-9" height="100vh">
+                {% block content %}{% endblock %}
+            </div>
+        </div>
+    </div>
+</body>
+</html>
