@@ -1,4 +1,6 @@
-class Permission(enum):
-    BASE_LEVEL = auto()
-    EVENT_MANAGER = auto()
-    ADMINISTRATOR = auto()
+from enum import Enum
+
+class Permission(Enum):
+    BASE_LEVEL =    'BASE_LEVEL'
+    EVENT_MANAGER = 'EVENT_MANAGER'
+    ADMINISTRATOR = 'ADMINISTRATOR'

@@ -4,7 +4,7 @@ from wtforms import Form, StringField, TimeField, DateField, TextAreaField, Inte
 # from wtforms.forms import *
 # from wtforms.validators import DataRequired
 
-from models import Event
+#from models import Event
 
 class EditEventForm(Form):
     title = StringField(u'Title', validators=[validators.input_required()])

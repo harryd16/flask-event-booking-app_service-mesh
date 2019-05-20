@@ -1,12 +1,21 @@
+import os
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 import datetime
 import random
-import country_list
+import hashlib
 
-from models import User, Event, Ticket
+from models import * # User, Event, Ticket
+basedir = os.path.abspath(os.path.dirname(__file__))
 
-100_EVENT_TITLES = ['A Flair to Remember', 'A Series of Fortunate Events', 'Affairs to Remember',
+
+NUM_OF_TEST_EVENTS = 100
+NUM_OF_TEST_USERS = 19
+NUM_OF_TEST_USERS_EVENT_MANAGER = 3
+NUM_OF_TEST_USERS_ADMINISTRATOR = 3
+
+EVENT_TITLES = ['A Flair to Remember', 'A Series of Fortunate Events', 'Affairs to Remember',
         'All-Season Events', 'All Ways Events', 'Alter-ations',
         'Argyle', 'Belle of the Ball', 'Be Our Guest',
         'Big Day', 'Black Cloth', 'Black Tie Productions',
@@ -38,7 +47,7 @@ from models import User, Event, Ticket
         'Three Cheers', 'Turnkey Events', 'Unforgettable Events',
         'VenYou', 'Weddings Unveiled', 'White Tent Events',
         'Without a Hitch', 'Wonder Works Event Planning', 'WOW Event Planning',
-        'You’re Invited', '(Your Name) Events', '(Your Last Name) & (Business Partner Last Name)',
+        'You\'re Invited', '(Your Name) Events', '(Your Last Name) & (Business Partner Last Name)',
         '(Year) Productions', '1000 Words Event Photography']
 
 EVENT_DESCRIPTION = '''Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Mauris pharetra et ultrices neque ornare aenean euismod elementum nisi. At in tellus integer feugiat scelerisque varius morbi enim nunc. Risus in hendrerit gravida rutrum quisque non tellus orci ac. Velit aliquet sagittis id consectetur purus. Curabitur gravida arcu ac tortor dignissim convallis aenean et tortor. Et netus et malesuada fames ac turpis egestas. Id faucibus nisl tincidunt eget. Malesuada bibendum arcu vitae elementum curabitur vitae nunc. In pellentesque massa placerat duis ultricies lacus sed. Tristique senectus et netus et malesuada fames ac. Quis vel eros donec ac odio tempor orci. Purus sit amet volutpat consequat mauris. A scelerisque purus semper eget. Fermentum leo vel orci porta non. Fermentum dui faucibus in ornare quam viverra. Sed risus pretium quam vulputate dignissim suspendisse in est. Velit euismod in pellentesque massa placerat duis ultricies lacus sed. Quis blandit turpis cursus in hac habitasse platea dictumst quisque. Ipsum suspendisse ultrices gravida dictum.
@@ -52,27 +61,108 @@ EVENT_DESCRIPTION = '''Lorem ipsum dolor sit amet, consectetur adipiscing elit, 
     Ultricies lacus sed turpis tincidunt id aliquet risus. Mattis nunc sed blandit libero volutpat sed cras ornare. In tellus integer feugiat scelerisque varius morbi enim nunc. Vel fringilla est ullamcorper eget nulla facilisi etiam dignissim diam. Imperdiet massa tincidunt nunc pulvinar sapien et. Pharetra vel turpis nunc eget lorem dolor. Sapien faucibus et molestie ac feugiat sed lectus vestibulum. Diam in arcu cursus euismod quis viverra nibh cras pulvinar. Ultricies mi quis hendrerit dolor
     magna eget est. Ipsum consequat nisl vel pretium lectus quam id leo. Semper viverra nam libero justo laoreet sit amet cursus sit. Porttitor eget dolor morbi non arcu.'''
 
+USER_TEST_USERNAMES = [
+    'test_user_al4342',
+    'test_user_jf5932',
+    'test_user_sf424',
+    'test_user_os3522',
+    'test_user_ho4856',
+    'test_user_gf0945',
+    'test_user_hg4582',
+    'test_user_gj3583',
+    'test_user_ab4253',
+    'test_user_ab3945',
+    'test_user_ac3852',
+    'test_user_sjf3466',
+    'test_user_sjg4523',
+    'test_user_sn4860',
+    'test_user_sn4360',
+    'test_user_sh8530',
+    'test_event_user_dh48690',
+    'test_event_user_sd58690',
+    'test_admin_sd97843',
+    'test_admin_sg06849',
+
+]
+
+EVENT_LOCATIONS = [
+    'Duck Pond Lawn',
+    'McKinnon Lawn',
+    '"The Yard" Cafe',
+    'Building 1 Room 3',
+    'Jugglers Lawn',
+    'Oval No. 2',
+    'Oval No. 1',
+    'Oval No. 4',
+    'Hockey Field',
+    'UniActive',
+    'Library',
+    'Koolabong',
+    'Building 3',
+    'Uni Hall',
+    'Uni Shop',
+    'Building 17'
+]
+
+PERMISSION_ENUMS = [
+    Permission.BASE_LEVEL,
+    Permission.EVENT_MANAGER,
+    Permission.ADMINISTRATOR
+]
+
 def random_datetime():
-    return datetime.datetime( 2019, random.randint(1,12), random.randint(1,29), random.randint(0,24), random.randint(0,60), random.randint(0,60), random.randint(0,1000000) )
+    return datetime.datetime( 2019, random.randint(1,12), random.randint(1,28), random.randint(0,23), random.randint(0,59), random.randint(0,59), random.randint(0,1000000), None)
 
-
-if __name__ == '__main__':
-    engine = create_engine('sqlite:////' + os.path.join(basedir, 'data.sqlite')
-    DBSession = sessionmaker(bind=engine)
-    session = DBSession()
+def main():
+    engine = create_engine('sqlite:////' + os.path.join(basedir, 'data.sqlite'))
+    Session = sessionmaker(bind=engine)
+    session = Session()
 
     random.seed()
 
 
+    # Events
+    for i in range(0, NUM_OF_TEST_EVENTS):
+        id = i
+        title = EVENT_TITLES[i]
+        response_going = random.randint(0,50)
+        response_interested = random.randint(0,50)
+        date_created = random_datetime()
+        datetime = random_datetime()
+        location = EVENT_LOCATIONS[random.randint(0,15)]
+        description = EVENT_DESCRIPTION[random.randint(0,3700):random.randint(0,3700)]
+        capapcity = random.randint(50,100)
 
-    new_event = Event()
-    for i in range(0,100):
-        new_event.id = i
-        new_event.title = 100_EVENT_TITLES[i]
-        new_event.response_going = random.randint(0,50)
+        new_event = Event(id, title, date_created, datetime, location, description, capapcity)
+        new_event.set_response_going(response_going)
+        new_event.set_response_interested(response_interested)
 
         session.add(new_event)
         session.commit()
 
+    # Users
+    for i in range(0, NUM_OF_TEST_USERS):
+        id = i
+        username = USER_TEST_USERNAMES[i]
+        password = 'testpass'
+
+        if i > ( NUM_OF_TEST_USERS - (NUM_OF_TEST_USERS_EVENT_MANAGER + NUM_OF_TEST_USERS_ADMINISTRATOR) ):
+            if i > (NUM_OF_TEST_USERS - NUM_OF_TEST_USERS_ADMINISTRATOR):
+                permission = Permission.ADMINISTRATOR
+            else:
+                permission = Permission.EVENT_MANAGER
+        else:
+            permission = Permission.BASE_LEVEL
+
+        new_user = User( username, password, permission )
+
+        session.add(new_user)
+
+        session.commit()
 
 
+
+
+
+if __name__ == '__main__':
+    main()

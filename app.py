@@ -12,9 +12,11 @@ from flask import Flask, render_template, request, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 # flask login: manage user login
 from flask_login import LoginManager, login_required, login_user, logout_user, current_user
-import flask_login as login
+import flask_login
 # Werkzeug: http tools
 from werkzeug.utils import secure_filename
+
+import random
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
@@ -35,15 +37,24 @@ from forms import EditEventForm, upload_image
 login_manager = LoginManager()
 login_manager.init_app(app)
 
+title = 'Events @ UOW'
+
 
 def allowed_file(filename):
     return '.' in filename and \
             filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
+def create_database():
+    db.drop_all()
+    db.create_all()
+
+random.seed()
+
 # homepage / event list
 @app.route('/')
 def index():
-    return render_template('index.html', navbar_events_active='active')
+    events = Event.query.all()
+    return render_template('index.html', navbar_events_active='active', title=title, events=events, random=random)
 
 # create event page
 @app.route('/new_event', methods=['GET', 'POST'])
@@ -74,7 +85,7 @@ def login():
             return flask.abort(400)
 
         return flask.redirect(next or flask.url_for('index'))
-    return render_template('login.html', form=form)
+    return render_template('login.html', form=form, title=title)
 
 # logout procedure
 @app.route('/logout')
@@ -87,17 +98,17 @@ def logout():
 @app.route('/manage_events')
 # @login_required
 def manage_events():
-    return render_template('manage_events.html', navbar_manage_events_active='active')
+    return render_template('manage_events.html', navbar_manage_events_active='active', title=title)
 
 # event search results
 @app.route('/search?=<event_search>')
 def search_results(search):
-    return render_template('search_results.html', event_search=search)
+    return render_template('search_results.html', event_search=search, title=title)
 
 # event calendar
 @app.route('/events_calendar')
 def events_calendar():
-    return render_template('events_calendar.html', navbar_calendar_active='active')
+    return render_template('events_calendar.html', navbar_calendar_active='active', title=title)
 
 # event registration
 '''
@@ -120,3 +131,5 @@ def event_registration(event_id):
 
 if __name__ == "__main__":
     app.run()
+    #create_database()
+

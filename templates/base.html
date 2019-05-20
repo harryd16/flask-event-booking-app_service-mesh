@@ -8,12 +8,10 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.1/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
 
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
-
     <title>{{ title }}</title>
     {% endblock %}
 </head>
-<body>
+<body data-spy="scroll" data-target="#vmenu" data-offset="15">
     <header>    
         <nav class="navbar navbar-light bg-light justify-content-between">
             <a class="navbar-brand link-unstyled" href="/">
@@ -22,9 +20,19 @@
                 Events @ UOW
             </a>
             <form class="form-inline">
-                <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
-                <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+                <div class="input-group justify-content-between">
+                    <input class="form-control" type="search" placeholder="Search" aria-label="Search" width="300px">
+                    <div class="input-group-append">
+                        <button class="btn btn-primary my-2 my-sm-0" type="submit">
+                            <img src={{ url_for('static', filename='magnifying-glass.svg') }} alt="Search" style="filter:invert(100%)" height="15px">
+                        </button>
+                    </div>
+                </div>
             </form>
+            <div>
+                <a role="button" class="btn btn-link text-dark" href="/sign_in">Sign In</a>
+                <a role="button" class="btn btn-outline-dark" href="/sign_up">Sign Up</a>
+            </div>
         </nav>
     </header>
     
@@ -33,7 +41,7 @@
     <div class="container-fluid" style="padding:20px">
         <div class="row">
             <div class="col-md-3">
-                <div class="list-group" data-spy="affix" data-offset-top="">
+                <div class="list-group" id="vmenu" data-spy="affix" data-offset-top="200">
                     <a href="/" class="list-group-item list-group-item-action {{ navbar_events_active }}">
                         All Events
                     </a>
@@ -48,7 +56,7 @@
                     </a>
                 </div>
             </div>
-            <div class="col-md-9" height="100vh">
+            <div class="col-md-9">
                 {% block content %}{% endblock %}
             </div>
         </div>
