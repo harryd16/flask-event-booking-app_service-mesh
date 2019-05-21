@@ -5,9 +5,9 @@
 {% endblock %}
 
 {% block content %}
-    <div class="row d-flex justify-content-around align-items-stretch">
+    <div class="row d-lg-flex justify-content-around align-items-stretch">
     {% for event in events %}
-    <div class="col-lg-4 d-flex align-items-stretch">
+    <div class="col-lg-4 d-lg-flex align-items-stretch">
         <div class="card mb-4">
             <a href="/event/{{ event.id }}">
                 <!-- <img class="card-img-top image-fluid" src="/static/images/event_banners/{{ event.id }}.png" alt="Image"> -->
