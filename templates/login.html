@@ -7,5 +7,32 @@
 
 {% block content %}
     {{ wtf.quick_form(form) }}
+    <br><br>
+    
+    <h5>Test users for demonstation purposes</h4>
+    <table class="table table-bordered table-dark ml-5 mr-5 mb-5">
+        <thead>
+            <th scope="col">Username</th>
+            <th scope="col">Password</th>
+            <th scope="col">Type</th>
+        </thead>
+        <tbody>
+            <tr>
+                <td>test_user_al4342</td>
+                <td>testpass</td>
+                <td>Regular User</td>
+            </tr>
+            <tr>
+                <td>test_event_user_dh48690</td>
+                <td>testpass</td>
+                <td>Event Manager</td>
+            </tr>
+            <tr>
+                <td>test_admin_sd97843</td>
+                <td>testpass</td>
+                <td>Administrator</td>
+            </tr>
+        </tbody>
+    </table>
 {% endblock %}
 
