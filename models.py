@@ -1,45 +1,30 @@
 from flask_sqlalchemy import SQLAlchemy
 import datetime
-from werkzeug.security import generate_password_hash, \
-     check_password_hash
-from app import db
+from werkzeug.security import generate_password_hash, check_password_hash
 from permission import Permission
+from flask_login import UserMixin
 
-class User(db.Model):
+from app import db, login
+
+@login.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
+
+class User(UserMixin, db.Model):
     __tablename__ = 'user'
 
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True)
-    password = db.Column(db.String(120))
+    pw_hash = db.Column(db.String(120))
     date_created = db.Column(db.DateTime)
     authenticated = db.Column(db.Boolean, default=False)
     permission = db.Column(db.String(13), default=Permission.BASE_LEVEL)
-
-    def is_active(self):
-        """True, as all users are active."""
-        return True
 
     def get_permission(self):
         return Permission(self.permission)
 
     def set_permission(self, permission):
         self.permission = permission
-
-
-    def get_id(self):
-        """Return the user id to satisfy Flask-Login's requirements."""
-        try:
-            return unicode(self.id)  # python 2
-        except NameError:
-            return str(self.id)  # python 3
-
-    def is_authenticated(self):
-        """Return True if the user is authenticated."""
-        return self.authenticated
-
-    def is_anonymous(self):
-        """False, as anonymous users aren't supported."""
-        return False
 
     def set_password(self, password):
         self.pw_hash = generate_password_hash(password)
@@ -48,10 +33,9 @@ class User(db.Model):
         return check_password_hash(self.pw_hash, password)
 
     def __init__(self, username, password, permission):
-        now = datetime.datetime.now()
         self.username = username
         self.set_password(password)
-        self.date_created = now
+        self.date_created = datetime.datetime.now()
         self.permission = permission
 
     def __repr__(self):
@@ -74,7 +58,7 @@ class Event(db.Model):
     capacity = db.Column(db.Integer)
 
     def get_short_description(self):
-        return self.description[0:100]
+        return self.description[0:300]
 
     def set_response_going(self, response_going):
         self.response_going = response_going

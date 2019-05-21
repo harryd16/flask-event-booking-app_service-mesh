@@ -1,0 +1,11 @@
+{% import "bootstrap/wtf.html" as wtf %}
+{% extends "base.html" %}
+
+{% block head %}
+    {{ super() }}
+{% endblock %}
+
+{% block content %}
+    {{ wtf.quick_form(form) }}
+{% endblock %}
+

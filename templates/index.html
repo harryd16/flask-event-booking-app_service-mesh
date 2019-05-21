@@ -22,7 +22,7 @@
                         {{ event.datetime }}<br>
                         {{ event.location }}<br>
                     </i>
-                    {{ event.get_short_description() }} <a href="#">...more</a>
+                    {{ event.get_short_description() }} <a href="/event/{{ event.id }}">...more</a>
                 </p>
                 <div class="d-flex justify-content-around align-items-baseline">
                     <button type="button" class="btn btn-outline-primary">Going</button>

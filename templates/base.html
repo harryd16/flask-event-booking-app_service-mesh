@@ -3,10 +3,10 @@
 <head>
     {% block head %}
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <!-- <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>-->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.1/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+    <!-- <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.1/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous"> -->
 
     <title>{{ title }}</title>
     {% endblock %}
@@ -29,9 +29,14 @@
                     </div>
                 </div>
             </form>
-            <div>
-                <a role="button" class="btn btn-link text-dark" href="/sign_in">Sign In</a>
-                <a role="button" class="btn btn-outline-dark" href="/sign_up">Sign Up</a>
+            <div class="d-flex align-items-baseline">
+                {% if current_user.is_anonymous %}
+                <a role="button" class="btn btn-link text-dark" href="/login">Sign Up</a>
+                <a role="button" class="btn btn-warning" href="/login">Sign In</a>
+                {% else %}
+                <p>{{ current_user.username }}</p>
+                <a role="button" class="btn btn-outline-dark ml-3" href="/logout">Sign Out</a>
+                {% endif %}
             </div>
         </nav>
     </header>
@@ -41,7 +46,7 @@
     <div class="container-fluid" style="padding:20px">
         <div class="row">
             <div class="col-md-3">
-                <div class="list-group" id="vmenu" data-spy="affix" data-offset-top="200">
+                <div class="list-group mb-4" id="vmenu" data-spy="affix" data-offset-top="200">
                     <a href="/" class="list-group-item list-group-item-action {{ navbar_events_active }}">
                         All Events
                     </a>

@@ -5,6 +5,7 @@ from sqlalchemy.orm import sessionmaker
 import datetime
 import random
 import hashlib
+from werkzeug import generate_password_hash, check_password_hash
 
 from models import * # User, Event, Ticket
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -130,7 +131,7 @@ def main():
         date_created = random_datetime()
         datetime = random_datetime()
         location = EVENT_LOCATIONS[random.randint(0,15)]
-        description = EVENT_DESCRIPTION[random.randint(0,3700):random.randint(0,3700)]
+        description = EVENT_DESCRIPTION[random.randint(0,1500):random.randint(1500,3700)]
         capapcity = random.randint(50,100)
 
         new_event = Event(id, title, date_created, datetime, location, description, capapcity)

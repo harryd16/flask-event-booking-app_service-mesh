@@ -4,41 +4,40 @@
 
 # standard python imports
 import os
+import sys
 import datetime
-
-# flask: web framework
-from flask import Flask, render_template, request, redirect, url_for
-# sqlalchemy: sql database
-from flask_sqlalchemy import SQLAlchemy
-# flask login: manage user login
-from flask_login import LoginManager, login_required, login_user, logout_user, current_user
-import flask_login
-# Werkzeug: http tools
-from werkzeug.utils import secure_filename
-
 import random
 
+# flask: web framework
+# sqlalchemy: sql database
+# flask login: manage user login
+# Werkzeug: http tools
+from flask import Flask, render_template, request, redirect, url_for, flash, abort
+from flask_sqlalchemy import SQLAlchemy
+from flask_login import LoginManager, login_required, login_user, logout_user, current_user
+from werkzeug.utils import secure_filename
+from flask_bootstrap import Bootstrap
+from forms import EditEventForm, upload_image, LoginForm
+
+# init sequence
 basedir = os.path.abspath(os.path.dirname(__file__))
+random.seed()
 
 UPLOAD_FOLDER = os.path.join(basedir, 'uploads')
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////' + os.path.join(basedir, 'data.sqlite')
-app.config['SECRET_KEY'] = 'golf0909software'
+app.config['SECRET_KEY'] = 'golf0909software' # set different os variable on server
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+Bootstrap(app)
 db = SQLAlchemy(app)
+
+login = LoginManager(app)
+login.login_view = 'login'
 
 # models: database design
 from models import *
-
-from forms import EditEventForm, upload_image
-
-login_manager = LoginManager()
-login_manager.init_app(app)
-
-title = 'Events @ UOW'
-
 
 def allowed_file(filename):
     return '.' in filename and \
@@ -48,17 +47,18 @@ def create_database():
     db.drop_all()
     db.create_all()
 
-random.seed()
+title = 'Events @ UOW'
 
 # homepage / event list
 @app.route('/')
+@app.route('/index')
 def index():
     events = Event.query.all()
     return render_template('index.html', navbar_events_active='active', title=title, events=events, random=random)
 
 # create event page
 @app.route('/new_event', methods=['GET', 'POST'])
-# @login_required # permission also required
+@login_required # permission also required
 def new_event():
     form = EditEventForm()
 
@@ -74,29 +74,38 @@ def new_event():
 # login page
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    print('test message')
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
+        print('user %s logged in', current_user)
     form = LoginForm()
     if form.validate_on_submit():
-        login_user(user)
+        user = User.query.filter_by(username=form.username.data).first()
+        print(user)
+        if user is None or not user.check_password(form.password.data):
+            flash('Invalid username or password')
 
-        flask.flash('Logged in successfully.')
+            print('password %s for userid %s incorrect', form.password.data, form.username.data)
 
-        next = flask.request.args.get('next')
-        if not is_safe_url(next):
-            return flask.abort(400)
+            return redirect(url_for('login'))
 
-        return flask.redirect(next or flask.url_for('index'))
-    return render_template('login.html', form=form, title=title)
+        login_user(user, remember=form.remember_me.data)
+        flash('Logged in successfully.')
+
+        print('password %s for userid %s correct', form.password.data, user.get_id())
+
+        return redirect(url_for('index'))
+    return render_template('login.html', form=form, title='Sign In')
 
 # logout procedure
 @app.route('/logout')
-@login_required
 def logout():
     logout_user()
-    return redirect(somewhere)
+    return redirect(url_for('index'))
 
 # event management page
 @app.route('/manage_events')
-# @login_required
+@login_required
 def manage_events():
     return render_template('manage_events.html', navbar_manage_events_active='active', title=title)
 
@@ -131,5 +140,8 @@ def event_registration(event_id):
 
 if __name__ == "__main__":
     app.run()
-    #create_database()
+
+    ## uncomment to clear database
+    ## run test_data.py for test data
+    # create_database()
 
