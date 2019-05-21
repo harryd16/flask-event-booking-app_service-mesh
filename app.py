@@ -14,6 +14,7 @@ import random
 # Werkzeug: http tools
 from flask import Flask, render_template, request, redirect, url_for, flash, abort
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import desc
 from flask_login import LoginManager, login_required, login_user, logout_user, current_user
 from werkzeug.utils import secure_filename
 from flask_bootstrap import Bootstrap
@@ -53,7 +54,7 @@ title = 'Events @ UOW'
 @app.route('/')
 @app.route('/index')
 def index():
-    events = Event.query.all()
+    events = Event.query.order_by(Event.event_datetime).all()
     return render_template('index.html', navbar_events_active='active', title=title, events=events, random=random)
 
 # create event page

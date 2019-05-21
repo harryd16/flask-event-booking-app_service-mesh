@@ -2,7 +2,7 @@ import os
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-import datetime
+from datetime import datetime, timedelta
 import random
 import hashlib
 from werkzeug import generate_password_hash, check_password_hash
@@ -111,8 +111,18 @@ PERMISSION_ENUMS = [
     Permission.ADMINISTRATOR
 ]
 
+RANDOM_EVENT_DATETIME_START = datetime.datetime.strptime('28/5/2019 12:00', '%d/%m/%Y %H:%M')
+RANDOM_EVENT_DATETIME_END   = datetime.datetime.strptime('28/12/2019 12:00', '%d/%m/%Y %H:%M')
+
 def random_datetime():
-    return datetime.datetime( 2019, random.randint(1,12), random.randint(1,28), random.randint(0,23), random.randint(0,59), random.randint(0,59), random.randint(0,1000000), None)
+    delta = RANDOM_EVENT_DATETIME_END - RANDOM_EVENT_DATETIME_START
+    delta_in_seconds = (delta.days * 24 * 60 * 60) + delta.seconds
+    random_second = random.randrange(delta_in_seconds)
+
+    return RANDOM_EVENT_DATETIME_START + timedelta(seconds=random_second)
+
+
+    #return datetime.datetime( 2019, random.randint(1,12), random.randint(1,28), random.randint(0,23), random.randint(0,59), random.randint(0,59), random.randint(0,1000000), None)
 
 def main():
     engine = create_engine('sqlite:////' + os.path.join(basedir, 'data.sqlite'))
@@ -128,13 +138,12 @@ def main():
         title = EVENT_TITLES[i]
         response_going = random.randint(0,50)
         response_interested = random.randint(0,50)
-        date_created = random_datetime()
-        datetime = random_datetime()
+        event_datetime = random_datetime()
         location = EVENT_LOCATIONS[random.randint(0,15)]
         description = EVENT_DESCRIPTION[random.randint(0,1500):random.randint(1500,3700)]
         capapcity = random.randint(50,100)
 
-        new_event = Event(id, title, date_created, datetime, location, description, capapcity)
+        new_event = Event(id, title, event_datetime, location, description, capapcity)
         new_event.set_response_going(response_going)
         new_event.set_response_interested(response_interested)
 
@@ -160,9 +169,6 @@ def main():
         session.add(new_user)
 
         session.commit()
-
-
-
 
 
 if __name__ == '__main__':

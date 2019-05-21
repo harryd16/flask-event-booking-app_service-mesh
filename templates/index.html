@@ -18,10 +18,10 @@
             <div class="card-body">
                 <h4 class="card-title">{{ event.title }}</h4>
                 <p class="card-text">
-                    <i>
-                        {{ event.datetime }}<br>
-                        {{ event.location }}<br>
-                    </i>
+                    <ul>
+                        <li>{{ event.get_datetime_string_australian() }}</li>
+                        <li>{{ event.location }}</li>
+                    </ul>
                     {{ event.get_short_description() }} <a href="/event/{{ event.id }}">...more</a>
                 </p>
                 <div class="d-flex justify-content-around align-items-baseline">

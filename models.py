@@ -52,13 +52,16 @@ class Event(db.Model):
     response_going = db.Column(db.Integer)
     response_interested = db.Column(db.Integer)
     date_created = db.Column(db.DateTime)
-    datetime = db.Column(db.DateTime)
+    event_datetime = db.Column(db.DateTime)
     location = db.Column(db.Text)
     description = db.Column(db.Text)
     capacity = db.Column(db.Integer)
 
     def get_short_description(self):
         return self.description[0:300]
+
+    def get_datetime_string_australian(self):
+        return self.event_datetime.strftime("%I:%M%p %A %d/%m/%y")
 
     def set_response_going(self, response_going):
         self.response_going = response_going
@@ -72,15 +75,14 @@ class Event(db.Model):
     def get_description(self):
         return self.description
 
-    def __init__(self, id, title, date_created, datetime, location, description, capacity):
-        now = datetime.now()
+    def __init__(self, id, title, event_datetime, location, description, capacity):
         #self.user = user
         self.title = title
-        self.date_created = now
-        self.datetime = now
-        self.location = ''
-        self.description = ''
-        self.capacity = 0
+        self.date_created = datetime.datetime.now()
+        self.event_datetime = event_datetime
+        self.location = location
+        self.description = description
+        self.capacity = capacity
 
     def __repr__(self):
         return '<Event %r>' % self.title
