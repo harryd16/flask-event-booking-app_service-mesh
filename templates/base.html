@@ -50,15 +50,24 @@
                     <a href="/" class="list-group-item list-group-item-action {{ navbar_events_active }}">
                         All Events
                     </a>
+                    <a href="/my_events" class="list-group-item list-group-item-action {{ navbar_going_active }}">
+                        Going
+                    </a>
+                    <!--
                     <a href="my_calendar" class="list-group-item list-group-item-action {{ navbar_calendar_active }}">
                         My Calendar
                     </a>
-                    <a href="manage_events" class="list-group-item list-group-item-action {{ navbar_manage_events_active }}">
-                        Manage Events (Staff)
+                    -->
+            {% if not current_user.is_anonymous and current_user.get_permission() > 1 %}
+                    <a href="/manage_events" class="list-group-item list-group-item-action {{ navbar_manage_events_active }}">
+                        Manage Events
                     </a>
-                    <a href="#" class="list-group-item list-group-item-action {{ navbar_manage_users_active }}">
-                        Manage Users (Super User)
+                    {% if current_user.get_permission() > 2 %}
+                    <a href="/manage_users" class="list-group-item list-group-item-action {{ navbar_manage_users_active }}">
+                        Manage Users
                     </a>
+                {% endif %}
+            {% endif %}
                 </div>
             </div>
             <div class="col-md-9">

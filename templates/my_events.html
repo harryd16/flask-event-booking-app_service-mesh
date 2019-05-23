@@ -5,12 +5,8 @@
 {% endblock %}
 
 {% block content %}
-<div class="col-12">
-<a type"button" href="new_event" class="btn btn-primary btn-block btn-lg mt-3" role="Button">New Event</a>
 
-<hr class="mt-5 mb-5">
-
-{%- for event in manager_events -%}
+{% for event in user_events %}
     <div class="card mt-3 mb-4">
         <div class="row">
             <div class="col-2">
@@ -22,16 +18,15 @@
                     </a>
                 </div>
             </div>
-            <div class="col-8">
+            <div class="col-8 mt-2 mb-2 ">
                 <div class="card-block">
-                    <h5 class="card-title mt-2">{{ event.title }}</h5>
-                    <h6 class="card-subtitle mb-2 text-muted">{{ event.event_datetime }} @ {{ event.location }}</h6>
+                    <h5 class="card-title">{{ event.title }}</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">{{ event.get_datetime_string_australian() }} @ {{ event.location }}</h6>
                     <p class="card-text">{{ event.response_going }} / {{ event.capacity }} registered going</p>
                 </div>
             </div>
-            <div class="col-md-2 d-flex flex-column mt-2 mb-2 justify-content-center">
-                <a class="btn btn-warning mb-1" href="/event/{{ event.id }}/edit" role="button">Edit</a>
-                <a class="btn btn-outline-danger mt-1" href="/event/{{ event.id }}/delete" role="button">Delete</a>
+            <div class="col-md-2 d-flex align-items-center mt-2 mb-2 justify-content-center">
+                <a class="btn btn-outline-danger" href="/event/{{ event.id}}/cancel_registration" role="button">Cancel</a>
             </div>
         </div>
         <div class="row">
@@ -45,7 +40,7 @@
             </div>
         </div>
     </div>
-{%- endfor %}
+{% endfor %}
 
-</div>
+
 {% endblock %}

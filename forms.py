@@ -1,5 +1,6 @@
 from flask_wtf import FlaskForm
-from wtforms import Form, StringField, TimeField, DateField, TextAreaField, IntegerField, FileField, PasswordField, SubmitField, BooleanField, validators
+from wtforms import Form, StringField, TimeField, DateField, TextAreaField, IntegerField, FileField, PasswordField, SubmitField, BooleanField, validators, DecimalField
+from wtforms.fields.html5 import EmailField
 # from wtforms.fields import *
 # from wtforms.forms import *
 # from wtforms.validators import DataRequired
@@ -30,4 +31,11 @@ class EditEventForm(Form):
     def validate_image(form, field):
         if field.data:
             field.data = re.sub(r'[^a-z0-9_.-]','_', field.data)
+
+class EventRegistrationForm(Form):
+    session_number = IntegerField('Session number')
+    quantity = IntegerField('Number of tickets')
+    email = EmailField('Email address', [validators.DataRequired(), validators.Email()])
+    register_going = SubmitField('I\'m Going') # bootstrap toggle button
+
 

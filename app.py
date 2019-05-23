@@ -19,6 +19,7 @@ from flask_login import LoginManager, login_required, login_user, logout_user, c
 from werkzeug.utils import secure_filename
 from flask_bootstrap import Bootstrap
 from forms import EditEventForm, upload_image, LoginForm
+from permission import Permission
 
 # init sequence
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -102,7 +103,16 @@ def logout():
 @app.route('/manage_events')
 @login_required
 def manage_events():
-    return render_template('manage_events.html', navbar_manage_events_active='active', title=title)
+    manager_events = Event.query.filter_by(user_creator_id=current_user.get_id()).order_by(Event.event_datetime)
+    return render_template('manage_events.html', navbar_manage_events_active='active', title=title, manager_events=manager_events, random=random, datetime=datetime)
+
+# users' going list
+@app.route('/my_events')
+@login_required
+def my_events():
+    #user_events = Event.query.join(User).filter_by(user_id=current_user.get_id())
+    user_events = Event.query.join(Ticket).filter( Ticket.user_id == current_user.get_id() ).order_by(Event.event_datetime)
+    return render_template('my_events.html', navbar_going_active='active', title=title, random=random, datetime=datetime, user_events=user_events )
 
 # event search results
 @app.route('/search?=<event_search>')
@@ -113,7 +123,12 @@ def search_results(search):
 @app.route('/events_calendar')
 def events_calendar():
     return render_template('events_calendar.html', navbar_calendar_active='active', title=title)
-
+'''
+# event page (includes session registration)
+@app.route('/event/<event_id>', methods=['GET', 'POST'])
+def event_page(event_id):
+    form = EventRegistrationForm()
+'''
 # event registration
 '''
 @app.route('/event/<event_id>/register' methods=['GET', 'POST'])
@@ -134,9 +149,10 @@ def event_registration(event_id):
 
 
 if __name__ == "__main__":
+    ## on trusted networks you can call flask run --host=0.0.0.0 to allow other users to access
     app.run()
 
     ## uncomment to clear database
     ## run test_data.py for test data
-    # create_database()
+    #create_database()
 

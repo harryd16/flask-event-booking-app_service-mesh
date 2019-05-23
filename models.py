@@ -18,13 +18,18 @@ class User(UserMixin, db.Model):
     pw_hash = db.Column(db.String(120))
     date_created = db.Column(db.DateTime)
     authenticated = db.Column(db.Boolean, default=False)
-    permission = db.Column(db.String(13), default=Permission.BASE_LEVEL)
+    permission = db.Column(db.Integer, default=Permission.BASE_LEVEL)
+
+    events = db.relationship(
+        'Event',
+        secondary='ticket'
+    )
 
     def get_permission(self):
-        return Permission(self.permission)
+        return self.permission
 
     def set_permission(self, permission):
-        self.permission = permission
+        self.permission = permission.value
 
     def set_password(self, password):
         self.pw_hash = generate_password_hash(password)
@@ -45,9 +50,7 @@ class Event(db.Model):
     __tablename__ = 'event'
 
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    user = db.relationship('User',
-        backref=db.backref('users', lazy='dynamic'))
+    user_creator_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     title = db.Column(db.Text)
     response_going = db.Column(db.Integer)
     response_interested = db.Column(db.Integer)
@@ -56,9 +59,24 @@ class Event(db.Model):
     location = db.Column(db.Text)
     description = db.Column(db.Text)
     capacity = db.Column(db.Integer)
+    sessions = db.Column(db.Integer)
+
+    users = db.relationship(
+        User,
+        secondary='ticket'
+    )
 
     def get_short_description(self):
         return self.description[0:300]
+
+    def get_id(self):
+        return self.id
+
+    def get_sessions(self):
+        return self.sessions
+
+    def get_event_datetime(self):
+        return self.event_datetime
 
     def get_datetime_string_australian(self):
         return self.event_datetime.strftime("%I:%M%p %A %d/%m/%y")
@@ -75,14 +93,22 @@ class Event(db.Model):
     def get_description(self):
         return self.description
 
-    def __init__(self, id, title, event_datetime, location, description, capacity):
-        #self.user = user
+    def calc_bootstrap_progress(self):
+        days_remaining = ( self.event_datetime - datetime.datetime.now() ).days
+        if ( days_remaining >= 30 ):
+            return 100
+        else:
+            return round( (float(days_remaining) / 30) * 100 )
+
+    def __init__(self, id, title, event_datetime, location, description, capacity, user, sessions):
+        self.user_creator_id = user.get_id()
         self.title = title
         self.date_created = datetime.datetime.now()
         self.event_datetime = event_datetime
         self.location = location
         self.description = description
         self.capacity = capacity
+        self.sessions = sessions
 
     def __repr__(self):
         return '<Event %r>' % self.title
@@ -90,18 +116,23 @@ class Event(db.Model):
 class Ticket(db.Model):
     __tablename__ = 'ticket'
 
-    id = db.Column(db.Integer, primary_key=True)
+    ticket_id = db.Column(db.Integer, primary_key=True)
+
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     event_id = db.Column(db.Integer, db.ForeignKey('event.id'))
+    session_number = db.Column(db.Integer)
     timestamp = db.Column(db.DateTime)
     guest_tickets = db.Column(db.Integer)
 
-    user = db.relationship("User", backref="user")
-    event = db.relationship("Event", backref="event")
+    user = db.relationship(User, backref="user_assoc")
+    event = db.relationship(Event, backref="event_assoc")
 
-    def __init__(self, user, event):
+    def __init__(self, user, event, session_number, timestamp, guest_tickets):
         self.user = user
+        user_id = user.get_id()
         self.event = event
+        event_id = event.get_id()
+        self.session_number = session_number
         self.timestamp = datetime.datetime.now()
         self.guest_tickets = 0
 

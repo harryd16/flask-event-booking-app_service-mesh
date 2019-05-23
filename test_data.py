@@ -132,24 +132,6 @@ def main():
     random.seed()
 
 
-    # Events
-    for i in range(0, NUM_OF_TEST_EVENTS):
-        id = i
-        title = EVENT_TITLES[i]
-        response_going = random.randint(0,50)
-        response_interested = random.randint(0,50)
-        event_datetime = random_datetime()
-        location = EVENT_LOCATIONS[random.randint(0,15)]
-        description = EVENT_DESCRIPTION[random.randint(0,1500):random.randint(1500,3700)]
-        capapcity = random.randint(50,100)
-
-        new_event = Event(id, title, event_datetime, location, description, capapcity)
-        new_event.set_response_going(response_going)
-        new_event.set_response_interested(response_interested)
-
-        session.add(new_event)
-        session.commit()
-
     # Users
     for i in range(0, NUM_OF_TEST_USERS):
         id = i
@@ -168,8 +150,47 @@ def main():
 
         session.add(new_user)
 
-        session.commit()
 
+    # Events
+    for i in range(0, NUM_OF_TEST_EVENTS):
+        id = i
+        title = EVENT_TITLES[i]
+        response_going = random.randint(0,50)
+        response_interested = random.randint(0,50)
+        event_datetime = random_datetime()
+        location = EVENT_LOCATIONS[random.randint(0,15)]
+        description = EVENT_DESCRIPTION[random.randint(0,1500):random.randint(1500,3700)]
+        capacity = random.randint(50,100)
+        user = session.query(User).get(random.randint(1, NUM_OF_TEST_USERS))
+        sessions = random.randint(0,3)
+
+        new_event = Event(id, title, event_datetime, location, description, capacity, user, sessions)
+        new_event.set_response_going(response_going)
+        new_event.set_response_interested(response_interested)
+
+        session.add(new_event)
+
+    # Tickets
+    users = session.query(User).all()
+    for event in session.query(Event).all():
+        for i in range(0, random.randint(0, event.capacity)):
+            if event.get_sessions() > 1:
+                session_number = random.randint(1, event.get_sessions())
+            else:
+                session_number = 1
+            guest_ticket = random.randint(0, 2)
+            new_ticket = Ticket(user=random.choice(users),
+                                event=event,
+                                session_number=session_number,
+                                timestamp=event.date_created,
+                                guest_tickets=guest_ticket
+            )
+
+
+        session.add(new_ticket)
+
+
+    session.commit()
 
 if __name__ == '__main__':
     main()

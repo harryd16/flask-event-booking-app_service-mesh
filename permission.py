@@ -1,6 +1,6 @@
 from enum import Enum
 
 class Permission(Enum):
-    BASE_LEVEL =    'BASE_LEVEL'
-    EVENT_MANAGER = 'EVENT_MANAGER'
-    ADMINISTRATOR = 'ADMINISTRATOR'
+    BASE_LEVEL =    1
+    EVENT_MANAGER = 2
+    ADMINISTRATOR = 3
