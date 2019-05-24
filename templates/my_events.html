@@ -26,7 +26,7 @@
                 </div>
             </div>
             <div class="col-md-12 col-lg-2 d-flex align-items-center mt-2 mb-2 justify-content-center">
-                <a class="btn btn-outline-danger btn-block ml-sm-3 mr-sm-3 mt-sm-2" href="/event/{{ event.id}}/cancel_registration" role="button">Cancel</a>
+                <button type="button" class="btn btn-outline-danger btn-block ml-sm-3 mr-sm-3 mt-sm-2" data-toggle="modal" data-target="#eventRegModal-{{ event.id }}">Cancel</button>
             </div>
         </div>
         <div class="row">
@@ -40,6 +40,8 @@
             </div>
         </div>
     </div>
+
+    {% include 'event_deregistration.html' %}
 {% endfor %}
 </div>
 {% endblock %}

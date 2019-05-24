@@ -22,7 +22,8 @@ class User(UserMixin, db.Model):
 
     events = db.relationship(
         'Event',
-        secondary='ticket'
+        secondary='ticket',
+        cascade='save-update, merge, delete'
     )
 
     def get_permission(self):
@@ -63,7 +64,8 @@ class Event(db.Model):
 
     users = db.relationship(
         User,
-        secondary='ticket'
+        secondary='ticket',
+        cascade='save-update, merge, delete'
     )
 
     def get_short_description(self):

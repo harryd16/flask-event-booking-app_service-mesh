@@ -161,7 +161,7 @@ def main():
         location = EVENT_LOCATIONS[random.randint(0,15)]
         description = EVENT_DESCRIPTION[random.randint(0,1500):random.randint(1500,3700)]
         capacity = random.randint(50,100)
-        user = session.query(User).get(random.randint(1, NUM_OF_TEST_USERS))
+        user = session.query(User).get(random.randint(NUM_OF_TEST_USERS - (NUM_OF_TEST_USERS_EVENT_MANAGER + NUM_OF_TEST_USERS_ADMINISTRATOR), NUM_OF_TEST_USERS))
         sessions = random.randint(0,3)
 
         new_event = Event(id, title, event_datetime, location, description, capacity, user, sessions)

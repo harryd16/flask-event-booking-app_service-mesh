@@ -36,13 +36,13 @@
                 </p>
         {%- if not current_user.is_anonymous and current_user.get_permission() > 2 -%}
                 <div class="d-flex justify-content-around align-items-baseline">
-                    <button type="button" class="btn btn-outline-primary btn-block {{ 'active' if event in user_events }} ">Going</button>
+                    <a href="#" id="going-launch"><button type="button" class="btn btn-outline-primary btn-block {{ 'active' if event in user_events }}" data-toggle="modal" data-target="#eventRegModal-{{ event.id }}">Going</button></a>
                     <a class="btn btn-warning btn-block ml-3 mr-3" href="/event/{{ event.id }}/edit" role="button">Edit</a>
                     <a class="btn btn-outline-danger btn-block" href="/event/{{ event.id }}/delete" role="button">Delete</a>
                 </div>
         {%- else -%}
                 <div class="d-flex justify-content-around align-items-baseline align-self-end">
-                    <a href="{{ '/login' if current_user.is_anonymous else "#"}}" id=going-launch><button type="button" class="btn btn-outline-primary btn-block mr-3 ml-3 {{ 'active' if event in user_events }}" data-toggle="modal" data-target="#eventRegModal-{{ event.id }}">Going</button></a>
+                    <a href="{{ '/login' if current_user.is_anonymous else "#"}}" id="going-launch"><button type="button" class="btn btn-outline-primary btn-block mr-3 ml-3 {{ 'active' if event in user_events }}" data-toggle="modal" data-target="#eventRegModal-{{ event.id }}">Going</button></a>
                     <p class="text-nowrap">{{ event.tickets_available() }} places left</p>
                 </div>
         {%- endif %}

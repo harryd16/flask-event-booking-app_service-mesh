@@ -64,26 +64,21 @@ def index():
             events=events, random=random, user_events=user_events,
             form=form
     )
-'''
-# event registration modal
-@app.route('/call_modal')
-def launch_modal():
-'''
 
 # deregister event
 @app.route('/event/<event_id>/deregister')
 @login_required
 def deregister(event_id):
-    # decrement event count by quantity on ticket
-    unwanted_ticket = Ticket.query.filter( (Ticket.user_id == current_user.get_id()) & (Ticket.event_id == event_id)).first()
-    associated_event = Event.query.filter( Event.id == unwanted_ticket.event_id ).first()
-    print associated_event.id
     try:
         unwanted_ticket = Ticket.query.filter( (Ticket.user_id == current_user.get_id()) & (Ticket.event_id == event_id)).first()
         associated_event = Event.query.filter( Event.id == unwanted_ticket.event_id ).first()
-        associated_event.registered_going -= unwanted_ticket.quantity
-        db.delete(unwanted_ticket)
-        db.commit()
+        # decrement event count by quantity on ticket
+        associated_event.response_going -= unwanted_ticket.quantity
+        #current_user.events.remove(unwanted_ticket)
+        db.session.delete(unwanted_ticket)
+        print Ticket.query.filter( (Ticket.user_id == current_user.get_id()) & (Ticket.event_id == event_id)).count()
+
+        db.session.commit()
         return redirect( url_for('index') )
     except:
         content = {'please move along':'the action attempted in invalid'}
@@ -100,7 +95,7 @@ def new_event():
     if request.method == 'POST' and form.validate():
         # do stuff here
         new_event = Event(form.title, form.time, form.date, form.location, form.description, form.capacity, form.image_url)
-
+        db.session.commit()
         # commit
         return redirect(url_for('manage_events'))
 
