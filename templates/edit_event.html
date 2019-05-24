@@ -5,7 +5,8 @@
 {% endblock %}
 
 {% block content %}
-    <form action="/new_event" method="POST">
+<div class="col-12">
+    <form action="{{ request.base_url }}" method="POST">
         <h2>New Event</h2>
         <div class="form-group">
             <input id="txtTitle" type="text" name="title" class="form-control form-control-lg" placeholder="Title">
@@ -24,17 +25,22 @@
         </div>
         <div class="form-group">
             <label for="txtDescription">Description</label>
-            <textarea id="txtDescription" class="form-control" rows="5"></textarea>
+            <textarea id="txtDescription" class="form-control" rows="5" name="description"></textarea>
         </div>
         <div class="form-group">
             <label for="numCapacity">Capacity</label>
             <input id="numCapacity" type="number" min="0" value="20" name="capacity" class="form-control">
         </div>
+        <div class="form-group">
+            <label for="numSessions">Number of sessions</label>
+            <input id="numSessions" type="number" min="1" value="1" name="sessions" class="form-control">
+        </div>
         <div class="form-group custom-file">
             <input id="uploadThumbnail" type="file" class="custom-file-input">
             <label class="custom-file-label" for="uploadThumbnail">Upload thumbnail image</label>
         </div>
-        {{ form.csrf_token }}
+        <a role="button" href="{{ url_for('index') }}" class="btn btn-secondary">Cancel</a> 
         <button type="submit" class="btn btn-primary">Submit</button>
     </form>
+</div>
 {% endblock %}

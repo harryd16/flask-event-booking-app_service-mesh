@@ -112,6 +112,9 @@ class Event(db.Model):
         self.capacity = capacity
         self.sessions = sessions
 
+        if self.response_going is None:
+            self.response_going = 0
+
     def __repr__(self):
         return '<Event %r>' % self.title
 

@@ -16,6 +16,7 @@ from flask import Flask, render_template, request, redirect, url_for, flash, abo
 from flask_api import status
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import desc
+from sqlalchemy.sql.expression import func
 from flask_login import LoginManager, login_required, login_user, logout_user, current_user
 from werkzeug.utils import secure_filename
 from flask_bootstrap import Bootstrap
@@ -111,18 +112,45 @@ def deregister(event_id):
 
 
 # create event page
-@app.route('/new_event', methods=['GET', 'POST'])
+@app.route('/manage/new_event', methods=['GET', 'POST'])
 @login_required # permission also required
 def new_event():
-    form = EditEventForm()
+    #form = EditEventForm()
 
-    if request.method == 'POST' and form.validate():
-        new_event = Event(form.title, form.time, form.date, form.location, form.description, form.capacity, form.image_url)
-        db.session.add(new_event)
-        db.session.commit()
-        return redirect(url_for('manage_events'))
+    if request.method == 'POST':
+        try:
+            print "try!!"
+            event_id = int(db.session.query(db.func.max(Event.id)).scalar()) + 1
+            print "event id created" + "=" +str( event_id)
+            title = request.form['title']
+            print str(title)
+            time = request.form['time']
+            print str(time)
+            date = request.form['date']
+            print str(date)
+            #event_datetime = datetime.datetime.combine(date, time)
+            event_datetime = datetime.datetime.now()
+            print str(event_datetime)
+            location = request.form['location']
+            print str(location)
+            description = request.form['description']
+            print str(location)
+            capacity = int(request.form['capacity'])
+            print capacity
+            sessions = int(request.form['sessions'])
 
-    return render_template('edit_event.html', form=form, navbar_manage_events='active')
+            new_event = Event( event_id, title, event_datetime, location,
+                    description, capacity, current_user, sessions )
+            print "event created"
+            db.session.add(new_event)
+            print "event added!"
+            db.session.commit()
+
+            return redirect(url_for('manage_events'))
+        except:
+            return redirect(url_for('manage_events'))
+
+    return render_template('edit_event.html', navbar_manage_events='active')
 
 # login page
 @app.route('/login', methods=['GET', 'POST'])
