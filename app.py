@@ -13,12 +13,13 @@ import random
 # flask login: manage user login
 # Werkzeug: http tools
 from flask import Flask, render_template, request, redirect, url_for, flash, abort
+from flask_api import status
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import desc
 from flask_login import LoginManager, login_required, login_user, logout_user, current_user
 from werkzeug.utils import secure_filename
 from flask_bootstrap import Bootstrap
-from forms import EditEventForm, upload_image, LoginForm
+from forms import EditEventForm, upload_image, LoginForm, EventRegistrationForm
 from permission import Permission
 
 # init sequence
@@ -55,8 +56,40 @@ title = 'Events @ UOW'
 @app.route('/')
 @app.route('/index')
 def index():
+    form = EventRegistrationForm()
     events = Event.query.order_by(Event.event_datetime).all()
-    return render_template('index.html', navbar_events_active='active', title=title, events=events, random=random)
+    user_events = Event.query.join(Ticket).filter( Ticket.user_id == current_user.get_id() ).order_by(Event.event_datetime)
+    return render_template(
+            'index.html', navbar_events_active='active', title=title,
+            events=events, random=random, user_events=user_events,
+            form=form
+    )
+'''
+# event registration modal
+@app.route('/call_modal')
+def launch_modal():
+'''
+
+# deregister event
+@app.route('/event/<event_id>/deregister')
+@login_required
+def deregister(event_id):
+    # decrement event count by quantity on ticket
+    unwanted_ticket = Ticket.query.filter( (Ticket.user_id == current_user.get_id()) & (Ticket.event_id == event_id)).first()
+    associated_event = Event.query.filter( Event.id == unwanted_ticket.event_id ).first()
+    print associated_event.id
+    try:
+        unwanted_ticket = Ticket.query.filter( (Ticket.user_id == current_user.get_id()) & (Ticket.event_id == event_id)).first()
+        associated_event = Event.query.filter( Event.id == unwanted_ticket.event_id ).first()
+        associated_event.registered_going -= unwanted_ticket.quantity
+        db.delete(unwanted_ticket)
+        db.commit()
+        return redirect( url_for('index') )
+    except:
+        content = {'please move along':'the action attempted in invalid'}
+        print status.HTTP_401_UNAUTHORIZED
+        return render_template("error/401.html"), status.HTTP_401_UNAUTHORIZED
+
 
 # create event page
 @app.route('/new_event', methods=['GET', 'POST'])
@@ -100,11 +133,14 @@ def logout():
     return redirect(url_for('index'))
 
 # event management page
-@app.route('/manage_events')
+@app.route('/manage/events')
 @login_required
 def manage_events():
     manager_events = Event.query.filter_by(user_creator_id=current_user.get_id()).order_by(Event.event_datetime)
-    return render_template('manage_events.html', navbar_manage_events_active='active', title=title, manager_events=manager_events, random=random, datetime=datetime)
+    return render_template(
+            'manage_events.html', navbar_manage_events_active='active',
+            title=title, manager_events=manager_events, random=random, datetime=datetime
+    )
 
 # users' going list
 @app.route('/my_events')
@@ -112,25 +148,80 @@ def manage_events():
 def my_events():
     #user_events = Event.query.join(User).filter_by(user_id=current_user.get_id())
     user_events = Event.query.join(Ticket).filter( Ticket.user_id == current_user.get_id() ).order_by(Event.event_datetime)
-    return render_template('my_events.html', navbar_going_active='active', title=title, random=random, datetime=datetime, user_events=user_events )
+    return render_template(
+            'my_events.html', navbar_going_active='active',
+            title=title, random=random, datetime=datetime, user_events=user_events
+    )
+
+# user management page
+@app.route('/manage/user')
+@login_required
+def manage_users():
+    users = User.query.filter_by(permission=1)
+    return render_template(
+            'manage_users.html',
+            navbar_manage_users_active='active', title=title,
+            tabs_manage_users_active='active', users=users
+    )
+
+# individual user edit
+@app.route('/manage/administrator/<username>')
+@login_required
+def manage_individual_administrator(username):
+    return render_template('base.html', title=username)
+
+# user management page
+@app.route('/manage/event_manager')
+@login_required
+def manage_event_managers():
+    users = User.query.filter_by(permission=2)
+    return render_template(
+            'manage_users.html',
+            navbar_manage_users_active='active', title=title,
+            tabs_manage_event_managers_active='active', users=users
+    )
+
+# individual event manager edit
+@app.route('/manage/event_manager/<username>')
+@login_required
+def manage_individual_event_manager(username):
+    return render_template('base.html', title=username)
+
+# user management page
+@app.route('/manage/administrator')
+@login_required
+def manage_administrators():
+    users = User.query.filter_by(permission=3)
+    return render_template(
+            'manage_users.html', navbar_manage_users_active='active',
+            title=title, tabs_manage_administrators_active='active', users=users
+    )
+
+# individual administrator edit
+@app.route('/manage/user/<username>')
+@login_required
+def manage_individual_user(username):
+    return render_template('base.html', title=username)
 
 # event search results
 @app.route('/search?=<event_search>')
 def search_results(search):
     return render_template('search_results.html', event_search=search, title=title)
 
+'''
 # event calendar
 @app.route('/events_calendar')
 def events_calendar():
     return render_template('events_calendar.html', navbar_calendar_active='active', title=title)
+'''
 '''
 # event page (includes session registration)
 @app.route('/event/<event_id>', methods=['GET', 'POST'])
 def event_page(event_id):
     form = EventRegistrationForm()
 '''
-# event registration
 '''
+# event registration
 @app.route('/event/<event_id>/register' methods=['GET', 'POST'])
 @login_required
 def event_registration(event_id):

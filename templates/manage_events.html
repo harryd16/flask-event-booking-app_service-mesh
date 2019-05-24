@@ -25,13 +25,13 @@
             <div class="col-8">
                 <div class="card-block">
                     <h5 class="card-title mt-2">{{ event.title }}</h5>
-                    <h6 class="card-subtitle mb-2 text-muted">{{ event.event_datetime }} @ {{ event.location }}</h6>
+                    <h6 class="card-subtitle mb-2 text-muted">{{ event.get_datetime_string_australian() }} @ {{ event.location }}</h6>
                     <p class="card-text">{{ event.response_going }} / {{ event.capacity }} registered going</p>
                 </div>
             </div>
-            <div class="col-md-2 d-flex flex-column mt-2 mb-2 justify-content-center">
-                <a class="btn btn-warning mb-1" href="/event/{{ event.id }}/edit" role="button">Edit</a>
-                <a class="btn btn-outline-danger mt-1" href="/event/{{ event.id }}/delete" role="button">Delete</a>
+            <div class="col-lg-2 col-md-12 d-flex flex-column mt-2 mb-2 justify-content-center">
+                <a class="btn btn-warning mb-1 ml-sm-3 mr-sm-3 mt-sm-2 text-nowrap" href="/event/{{ event.id }}/edit" role="button">Edit</a>
+                <a class="btn btn-outline-danger mt-1 ml-sm-3 mr-sm-3 mt-sm-2 text-nowrap" href="/event/{{ event.id }}/delete" role="button">Delete</a>
             </div>
         </div>
         <div class="row">

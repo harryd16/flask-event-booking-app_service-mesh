@@ -122,19 +122,19 @@ class Ticket(db.Model):
     event_id = db.Column(db.Integer, db.ForeignKey('event.id'))
     session_number = db.Column(db.Integer)
     timestamp = db.Column(db.DateTime)
-    guest_tickets = db.Column(db.Integer)
+    quantity = db.Column(db.Integer)
 
     user = db.relationship(User, backref="user_assoc")
     event = db.relationship(Event, backref="event_assoc")
 
-    def __init__(self, user, event, session_number, timestamp, guest_tickets):
+    def __init__(self, user, event, session_number, timestamp, quantity):
         self.user = user
         user_id = user.get_id()
         self.event = event
         event_id = event.get_id()
         self.session_number = session_number
         self.timestamp = datetime.datetime.now()
-        self.guest_tickets = 0
+        self.quantity = quantity
 
     def __repr__(self):
         return '<Ticket %r>' % self.id

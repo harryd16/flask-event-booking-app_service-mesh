@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block head %}
+    {{ super() }}
+{% endblock %}
+
+{% block content %}
+<div class="col-12">
+    <a type"button" href="{{ url_for(request.endpoint) + '/' + 'new_user'}}" class="btn btn-primary btn-block btn-lg mt-3" role="Button">New User</a>
+
+    <hr class="mt-5 mb-5">
+
+    <ul class="nav nav-tabs">
+        <li class="nav-item">
+            <a class="nav-link {{ tabs_manage_users_active }}" href="/manage/user">Users</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {{ tabs_manage_event_managers_active }}" href="/manage/event_manager">Event Managers</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {{ tabs_manage_administrators_active }}" href="/manage/administrator">Administrators</a>
+        </li>
+    </ul>
+    <div class="col-12 border-left border-right border-bottom">
+        <br>
+        <ul>
+            {%- for user in users -%}
+            <li>
+                <a href="{{ url_for(request.endpoint) + '/' + user.username }}">{{ user.username }}</a>
+            </li>
+            {%- endfor %}
+        </ul>
+    </div>
+
+</div>
+{% endblock %}

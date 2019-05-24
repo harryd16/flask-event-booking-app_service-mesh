@@ -178,17 +178,15 @@ def main():
                 session_number = random.randint(1, event.get_sessions())
             else:
                 session_number = 1
-            guest_ticket = random.randint(0, 2)
-            new_ticket = Ticket(user=random.choice(users),
-                                event=event,
-                                session_number=session_number,
-                                timestamp=event.date_created,
-                                guest_tickets=guest_ticket
+            quantity = random.randint(0, 2)
+            new_ticket = Ticket(
+                    user=random.choice(users),
+                    event=event,
+                    session_number=session_number,
+                    timestamp=event.date_created,
+                    quantity=quantity
             )
-
-
         session.add(new_ticket)
-
 
     session.commit()
 
