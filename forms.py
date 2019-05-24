@@ -36,6 +36,6 @@ class EventRegistrationForm(Form):
     session_number = IntegerField('Session number')
     quantity = IntegerField('Number of tickets')
     email = EmailField('Email address', [validators.DataRequired(), validators.Email()])
-    register_going = SubmitField('I\'m Going') # bootstrap toggle button
+    response_going = SubmitField('I\'m Going') # bootstrap toggle button
 
 

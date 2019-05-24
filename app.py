@@ -54,11 +54,37 @@ title = 'Events @ UOW'
 
 # homepage / event list
 @app.route('/')
-@app.route('/index')
+@app.route('/index', methods=['GET', 'POST'])
 def index():
     form = EventRegistrationForm()
     events = Event.query.order_by(Event.event_datetime).all()
     user_events = Event.query.join(Ticket).filter( Ticket.user_id == current_user.get_id() ).order_by(Event.event_datetime)
+
+    if request.method == 'POST':
+        try:
+            email          = request.form['email']
+            quantity       = int(request.form['quantity'])
+            event_id       = request.form['event_id']
+            event          = Event.query.get(event_id)
+            try:
+                session_number = int(request.form['session_number'])
+            except:
+                session_number = 1
+            timestamp      = datetime.datetime.now()
+            new_ticket = Ticket(
+                    user=current_user, event=event,
+                    session_number=session_number, timestamp=timestamp,
+                    quantity=quantity
+            );
+            event.response_going += quantity
+            db.session.add(new_ticket)
+            db.session.commit()
+            return redirect( url_for('my_events') )
+
+        except:
+            print "failed POST"
+            return redirect( url_for('index') )
+
     return render_template(
             'index.html', navbar_events_active='active', title=title,
             events=events, random=random, user_events=user_events,
@@ -76,13 +102,11 @@ def deregister(event_id):
         associated_event.response_going -= unwanted_ticket.quantity
         #current_user.events.remove(unwanted_ticket)
         db.session.delete(unwanted_ticket)
-        print Ticket.query.filter( (Ticket.user_id == current_user.get_id()) & (Ticket.event_id == event_id)).count()
 
         db.session.commit()
         return redirect( url_for('index') )
     except:
         content = {'please move along':'the action attempted in invalid'}
-        print status.HTTP_401_UNAUTHORIZED
         return render_template("error/401.html"), status.HTTP_401_UNAUTHORIZED
 
 
@@ -93,10 +117,9 @@ def new_event():
     form = EditEventForm()
 
     if request.method == 'POST' and form.validate():
-        # do stuff here
         new_event = Event(form.title, form.time, form.date, form.location, form.description, form.capacity, form.image_url)
+        db.session.add(new_event)
         db.session.commit()
-        # commit
         return redirect(url_for('manage_events'))
 
     return render_template('edit_event.html', form=form, navbar_manage_events='active')
@@ -107,7 +130,7 @@ def login():
     if current_user.is_authenticated:
         return redirect(url_for('index'))
     form = LoginForm()
-    if form.validate_on_submit():
+    if request.method == 'POST' and form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data).first()
         if user is None or not user.check_password(form.password.data):
             flash('Invalid username or password', 'error')
@@ -115,8 +138,6 @@ def login():
 
         login_user(user, remember=form.remember_me.data)
         flash('Logged in successfully.')
-
-        print('password %s for userid %s correct', form.password.data, user.get_id())
 
         return redirect(url_for('index'))
     return render_template('login.html', form=form, title='Sign In')
