@@ -130,7 +130,7 @@ def new_event():
             sessions = int(request.form['sessions'])
             price = 0
             try:
-                price = int(request.form['price']
+                price = int(request.form['price'])
 
             new_event = Event( event_id, title, event_datetime, location,
                     description, capacity, current_user, sessions )
