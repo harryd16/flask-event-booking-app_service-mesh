@@ -16,6 +16,8 @@ NUM_OF_TEST_USERS = 19
 NUM_OF_TEST_USERS_EVENT_MANAGER = 3
 NUM_OF_TEST_USERS_ADMINISTRATOR = 3
 
+DISCOUNT_CODES = {'5OFF':5, '10OFF': 10, '30OFF':30, 'FREE':100}
+
 EVENT_TITLES = ['A Flair to Remember', 'A Series of Fortunate Events', 'Affairs to Remember',
         'All-Season Events', 'All Ways Events', 'Alter-ations',
         'Argyle', 'Belle of the Ball', 'Be Our Guest',
@@ -155,7 +157,7 @@ def main():
     for i in range(0, NUM_OF_TEST_EVENTS):
         id = i
         title = EVENT_TITLES[i]
-        response_going = random.randint(0,50)
+        response_going = 0
         response_interested = random.randint(0,50)
         event_datetime = random_datetime()
         location = EVENT_LOCATIONS[random.randint(0,15)]
@@ -172,21 +174,30 @@ def main():
 
     # Tickets
     users = session.query(User).all()
+    discount_keys = DISCOUNT_CODES.keys()
     for event in session.query(Event).all():
+        for i in range(0, random.randint(0, len(DISCOUNT_CODES)-1)):
+            new_discount = Discount( event.get_id(), discount_keys[i], DISCOUNT_CODES[discount_keys[i]] )
+            session.add(new_discount)
+
         for i in range(0, random.randint(0, event.capacity)):
+            user_pool = list(users)
             if event.get_sessions() > 1:
                 session_number = random.randint(1, event.get_sessions())
             else:
                 session_number = 1
-            quantity = random.randint(0, 2)
+            quantity = 1
+            event.response_going += 1
+            ticket_user = random.randint(0, len(user_pool)-1)
             new_ticket = Ticket(
-                    user=random.choice(users),
+                    user=user_pool[ticket_user],
                     event=event,
                     session_number=session_number,
                     timestamp=event.date_created,
                     quantity=quantity
             )
-        session.add(new_ticket)
+            user_pool.pop(ticket_user)
+            session.add(new_ticket)
 
     session.commit()
 

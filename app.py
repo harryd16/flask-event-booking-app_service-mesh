@@ -119,31 +119,31 @@ def new_event():
 
     if request.method == 'POST':
         try:
-            print "try!!"
             event_id = int(db.session.query(db.func.max(Event.id)).scalar()) + 1
-            print "event id created" + "=" +str( event_id)
             title = request.form['title']
-            print str(title)
             time = request.form['time']
-            print str(time)
             date = request.form['date']
-            print str(date)
-            #event_datetime = datetime.datetime.combine(date, time)
             event_datetime = datetime.datetime.now()
-            print str(event_datetime)
             location = request.form['location']
-            print str(location)
             description = request.form['description']
-            print str(location)
             capacity = int(request.form['capacity'])
-            print capacity
             sessions = int(request.form['sessions'])
+            price = 0
+            try:
+                price = int(request.form['price']
 
             new_event = Event( event_id, title, event_datetime, location,
                     description, capacity, current_user, sessions )
-            print "event created"
+
             db.session.add(new_event)
-            print "event added!"
+            db.session.commit()
+
+            discount_code = request.form['discount_code']
+            discount_percent = int(request.form['discount_percent'])
+
+            new_discount = Discount( event_id, discount_code, discount_percent )
+
+            db.session.add( new_discount )
             db.session.commit()
 
             return redirect(url_for('manage_events'))
@@ -222,7 +222,7 @@ def manage_event_managers():
     return render_template(
             'manage_users.html',
             navbar_manage_users_active='active', title=title,
-            tabs_manage_event_managers_active='active', users=users
+            tabs_manage_event_managers_active='active', users=users,
     )
 
 # individual event manager edit
@@ -248,9 +248,14 @@ def manage_individual_user(username):
     return render_template('base.html', title=username)
 
 # event search results
-@app.route('/search?=<event_search>')
-def search_results(search):
-    return render_template('search_results.html', event_search=search, title=title)
+@app.route('/?search=<search_term>', methods=['GET'])
+def search_results(search_term):
+    events = Event.query.filter(Event.title.like('%' + search_term + '%')).order_by(Event.title).all()
+    try:
+        events = Event.query.filter(Event.title.like('%' + search_term + '%')).order_by(Event.title).all()
+        return render_template('index.html', events=events, title=title)
+    except:
+        return redirect( url_for('index') )
 
 '''
 # event calendar

@@ -68,6 +68,8 @@ class Event(db.Model):
         cascade='save-update, merge, delete'
     )
 
+    valid_discount_codes = db.relationship('Discount')
+
     def get_short_description(self):
         return self.description[0:300]
 
@@ -143,3 +145,21 @@ class Ticket(db.Model):
 
     def __repr__(self):
         return '<Ticket %r>' % self.id
+
+class Discount(db.Model):
+    __tablename__ = 'discount'
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    event_id = db.Column(db.Integer, db.ForeignKey('event.id'))
+
+    code = db.Column(db.String)
+    percent_off = db.Column(db.Integer)
+
+    def __init__(self, event_id, code, percent_off):
+        self.event_id = event_id
+        self.code = code
+        self.percent_off = percent_off
+
+    def __repr__(self):
+        return '<Discount %r>' % self.id

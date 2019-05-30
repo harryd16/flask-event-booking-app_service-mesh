@@ -27,6 +27,7 @@
                     <h5 class="card-title mt-2">{{ event.title }}</h5>
                     <h6 class="card-subtitle mb-2 text-muted">{{ event.get_datetime_string_australian() }} @ {{ event.location }}</h6>
                     <p class="card-text">{{ event.response_going }} / {{ event.capacity }} registered going</p>
+                    <p class="card-text">Discount codes valid: {% for discount in event.valid_discount_codes %}{{ discount.code }}:{{ discount.percent_off }}&nbsp;{% endfor %}</p>
                 </div>
             </div>
             <div class="col-lg-2 col-md-12 d-flex flex-column mt-2 mb-2 justify-content-center">
