@@ -128,14 +128,14 @@ def new_event():
             description = request.form['description']
             capacity = int(request.form['capacity'])
             sessions = int(request.form['sessions'])
-            price = 0
+            price = 0.0
             try:
-                price = int(request.form['price'])
+                price = float(request.form['price'])
             except:
                 pass
 
             new_event = Event( event_id, title, event_datetime, location,
-                    description, capacity, current_user, sessions )
+                    description, capacity, current_user, sessions, price )
 
             db.session.add(new_event)
             db.session.commit()

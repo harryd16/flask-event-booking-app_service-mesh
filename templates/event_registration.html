@@ -48,7 +48,22 @@
                         <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
                     </div>
                 </div>
+
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <button id="calcTotal" onclick="calcTotal()" class="btn btn-success p-2 mr-5">Get ticket price</button>
+                    </div>
+                    <div>
+                        <p id="txtTotal" class="text-center font-weight-bold p-2"></p>
+                    </div>
+                </div>
+
+                <div class=form-group>
+                    <label for="discount" class="col col-form-label">Discount code</label>
+                    <input type="text" class="form-control" id="discount" name="discount">
+                </div>
                 <input type="hidden" name="event_id" value="{{ event.id }}" />
+                <input id="initialCost" type="hidden" name="initialCost" value="{{ event.cost }}" />
             </div>
             <div class="modal-footer d-flex justify-content-between">
                 <a role="button" href="/event/{{ event.id }}/interested" class="btn btn-outline-warning">Interested</a>

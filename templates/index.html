@@ -3,19 +3,28 @@
 {% block head %}
     {{ super() }}
 {% endblock %}
-{#
 <script type=text/javascript>
-    $(function() {
-        $('a#going-launch').bind('click', function() {
-            $.getJSON('/call_modal',
-                function(data) {
-                    // nothing to do in javascript
-                });
-            return false;
-        });
+    $.ajaxSetup ({
+        cache: false
     });
+    function calcTotal() {
+        var quantity = $("[name='quantity']");
+            //document.getElementById('quantity').value;
+        var initial_cost = $("[name='initialCost']");
+            //document.getElementById('initialCost').value;
+        var cost = quantity * initial_cost;
+
+        var xhttp = new XMLHttpRequest();
+        xhttp.responseText = "Total = $" + cost.toFixed(2);
+        xhttp.onreadystatechange = function() {
+            if (xhttp.readyState == 4 && xhttp.status == 200) {
+                $('#txtTotal').text(xttp.responseText);
+                //document.getElementById("id=txtTotal").innerHTML = xhttp.responseText;
+            }
+        xhttp.open("GET", "ajax_info.txt", true);
+        xhttp.send();
+    }
 </script>
-#}
 {% block content %}
 <div class="col-12">
     <div class="row d-lg-flex justify-content-around align-items-stretch">
@@ -23,7 +32,7 @@
     <div class="col-lg-4 d-lg-flex align-items-stretch">
         <div class="col-12">
         <div class="card mb-4">
-            <a href="/event/{{ event.id }}">
+            {# <a href="/event/{{ event.id }}"> #}
                 <!-- <img class="card-img-top image-fluid" src="/static/images/event_banners/{{ event.id }}.png" alt="Image"> -->
                 <svg width="100%" height="10%">
                     <rect width="100%" height="100%" style="fill:rgb( {{ random.randint(0,255) }},{{ random.randint(0,255) }},{{ random.randint(0,255) }})"/>
@@ -34,18 +43,21 @@
                 <h6 class="card-subtitle mb-2 text-muted">{{ event.get_datetime_string_australian() }}<br>@ {{ event.location }}</h6>
                 <div class="col-12">
                     <p class="card-text">
-                        {{ event.get_short_description() }} <a href="/event/{{ event.id }}">...more</a>
+                    {{ event.get_short_description() }} {# <a href="/event/{{ event.id }}">...more</a> #}
                     </p>
-                </div>
         {%- if not current_user.is_anonymous and current_user.get_permission() > 2 -%}
-                <div class="d-flex justify-content-around align-items-baseline">
+                    <p class="text-nowrap text-center">{{ 'FREE' if event.price == 0.0 else ('$' + event.price|string) }}</p>
+                </div>
+                <div class="d-flex justify-content-around align-items-baseline mt-3">
                     <a href="#" id="going-launch"><button type="button" class="btn btn-outline-primary btn-block {{ 'active' if event in user_events }}" data-toggle="modal" data-target="#eventRegModal-{{ event.id }}">Going</button></a>
                     <a class="btn btn-warning btn-block ml-3 mr-3" href="/event/{{ event.id }}/edit" role="button">Edit</a>
                     <a class="btn btn-outline-danger btn-block" href="/event/{{ event.id }}/delete" role="button">Delete</a>
                 </div>
         {%- else -%}
-                <div class="d-flex justify-content-around align-items-baseline align-self-end">
+                </div>
+                <div class="d-flex justify-content-around align-items-baseline align-self-end mt-3 flex-wrap">
                     <a href="{{ '/login' if current_user.is_anonymous else "#"}}" id="going-launch"><button type="button" class="btn btn-outline-primary btn-block mr-3 ml-3 {{ 'active' if event in user_events }}" data-toggle="modal" data-target="#eventRegModal-{{ event.id }}">Going</button></a>
+                    <p class="text-nowrap ml-2">{{ 'FREE' if event.price == 0.0 else ('$' + event.price|string) }}</p>
                     <p class="text-nowrap">{{ event.tickets_available() }} places left</p>
                 </div>
         {%- endif %}

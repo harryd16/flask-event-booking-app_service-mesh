@@ -61,6 +61,7 @@ class Event(db.Model):
     description = db.Column(db.Text)
     capacity = db.Column(db.Integer)
     sessions = db.Column(db.Integer)
+    price = db.Column(db.Float)
 
     users = db.relationship(
         User,
@@ -104,7 +105,7 @@ class Event(db.Model):
         else:
             return round( (float(days_remaining) / 30) * 100 )
 
-    def __init__(self, id, title, event_datetime, location, description, capacity, user, sessions):
+    def __init__(self, id, title, event_datetime, location, description, capacity, user, sessions, price):
         self.user_creator_id = user.get_id()
         self.title = title
         self.date_created = datetime.datetime.now()
@@ -113,6 +114,7 @@ class Event(db.Model):
         self.description = description
         self.capacity = capacity
         self.sessions = sessions
+        self.price = price
 
         if self.response_going is None:
             self.response_going = 0

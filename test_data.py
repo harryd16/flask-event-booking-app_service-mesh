@@ -17,6 +17,7 @@ NUM_OF_TEST_USERS_EVENT_MANAGER = 3
 NUM_OF_TEST_USERS_ADMINISTRATOR = 3
 
 DISCOUNT_CODES = {'5OFF':5, '10OFF': 10, '30OFF':30, 'FREE':100}
+EVENT_PRICES = [0.0, 0.0, 10, 16, 20, 25, 90, 110]
 
 EVENT_TITLES = ['A Flair to Remember', 'A Series of Fortunate Events', 'Affairs to Remember',
         'All-Season Events', 'All Ways Events', 'Alter-ations',
@@ -165,8 +166,9 @@ def main():
         capacity = random.randint(50,100)
         user = session.query(User).get(random.randint(NUM_OF_TEST_USERS - (NUM_OF_TEST_USERS_EVENT_MANAGER + NUM_OF_TEST_USERS_ADMINISTRATOR), NUM_OF_TEST_USERS))
         sessions = random.randint(0,3)
+        price = random.choice(EVENT_PRICES)
 
-        new_event = Event(id, title, event_datetime, location, description, capacity, user, sessions)
+        new_event = Event(id, title, event_datetime, location, description, capacity, user, sessions, price)
         new_event.set_response_going(response_going)
         new_event.set_response_interested(response_interested)
 
