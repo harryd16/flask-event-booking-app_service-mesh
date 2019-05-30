@@ -131,6 +131,8 @@ def new_event():
             price = 0
             try:
                 price = int(request.form['price'])
+            except:
+                pass
 
             new_event = Event( event_id, title, event_datetime, location,
                     description, capacity, current_user, sessions )
