@@ -65,8 +65,8 @@ class Event(db.Model):
 
     users = db.relationship(
         User,
-        secondary='ticket',
-        cascade='save-update, merge, delete'
+        secondary='ticket'
+        #cascade='all, delete'
     )
 
     valid_discount_codes = db.relationship('Discount')

@@ -7,6 +7,57 @@
 {% block content %}
 <div class="col-12">
     <form action="{{ request.base_url }}" method="POST">
+        {% if event_id > -1 %}
+        <h2>New Event</h2>
+        <div class="form-group">
+            <input id="txtTitle" type="text" name="title" class="form-control form-control-lg" placeholder="Title" value="{{ event.title }}">
+        </div>
+        <div class="form-group">
+            <label for="timeEventTime">Time</label>
+            <input id="timeEventTime" type="time" name="time" class="form-control" value="{{ event.event_datetime.time() }}">
+        </div>
+        <div class="form-group">
+            <label for="dateEventDate">Date</label>
+            <input id="dateEventDate" type="date" name="date" class="form-control" value="{{ event.event_datetime.date() }}">
+        </div>
+        <div class="form-group">
+            <label for="txtLocation">Location</label>
+            <input id="txtLocation" type="text" name="location" class="form-control" value="{{ event.location }}">
+        </div>
+        <div class="form-group">
+            <label for="txtDescription">Description</label>
+            <textarea id="txtDescription" class="form-control" rows="5" name="description" value="{{ event.description }}"></textarea>
+        </div>
+        <div class="form-group">
+            <label for="numCapacity">Capacity</label>
+            <input id="numCapacity" type="number" min="0" value="20" name="capacity" class="form-control" value="{{ event.capacity }}">
+        </div>
+        <div class="form-group">
+            <label for="numSessions">Number of sessions</label>
+            <input id="numSessions" type="number" min="1" value="{{ event.sessions }}" name="sessions" class="form-control">
+        </div>
+        <h4>Price <i>(optional)</i></h4>
+        <div class="bg-light p-3 mb-3">
+            <div class="form-group">
+                <label for="price">$</label>
+                <input id="price" type="number" min="0" value="{{ event.price }}" name="price" class="form-control bg-light">
+            </div>
+            <div class="form-group">
+                <label for="txtDiscount">Discount code</label>
+                <input id="txtDiscount" type="text" min="1" value="{%- for discount in event.valid_discount_codes -%}{{ discount.code }}&nbsp;{%- endfor %}" name="discount_code" class="form-control bg-light">
+            </div>
+            <div class="form-group">
+                <label for="txtDiscountPercent">Discount % off</label>
+                <input id="txtDiscountPercent" type="number" min="0" max="100" value="" name="discount_percent" class="form-control bg-light" step=".01">
+            </div>
+        </div>
+        <div class="form-group custom-file mb-3">
+            <input id="uploadThumbnail" type="file" class="custom-file-input">
+            <label class="custom-file-label" for="uploadThumbnail">Upload thumbnail image</label>
+        </div>
+        <a role="button" href="{{ url_for('index') }}" class="btn btn-secondary">Cancel</a> 
+        <button type="submit" class="btn btn-primary">Submit</button>
+        {% else %}
         <h2>New Event</h2>
         <div class="form-group">
             <input id="txtTitle" type="text" name="title" class="form-control form-control-lg" placeholder="Title">
@@ -56,6 +107,7 @@
         </div>
         <a role="button" href="{{ url_for('index') }}" class="btn btn-secondary">Cancel</a> 
         <button type="submit" class="btn btn-primary">Submit</button>
+        {% endif %}
     </form>
 </div>
 {% endblock %}

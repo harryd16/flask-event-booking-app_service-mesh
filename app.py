@@ -110,6 +110,14 @@ def deregister(event_id):
         content = {'please move along':'the action attempted in invalid'}
         return render_template("error/401.html"), status.HTTP_401_UNAUTHORIZED
 
+@app.route('/event/<event_id>/delete')
+@login_required
+def delete_event(event_id):
+    unwanted_event = Event.query.get(event_id)
+    print(unwanted_event)
+    db.session.delete(unwanted_event)
+    db.session.commit()
+    redirect_( url_for('manage_events') )
 
 # create event page
 @app.route('/manage/new_event', methods=['GET', 'POST'])
@@ -152,7 +160,14 @@ def new_event():
         except:
             return redirect(url_for('manage_events'))
 
-    return render_template('edit_event.html', navbar_manage_events='active')
+    return render_template('edit_event.html', navbar_manage_events='active', title="Events @ UOW", event_id=-5)
+
+@app.route('/event/<event_id>/edit')
+@login_required
+def edit_event(event_id):
+    event = Event.query.get(event_id)
+    return render_template('edit_event.html', event=event, title=title, navbar_manage_events='active', event_id=event.get_id())
+
 
 # login page
 @app.route('/login', methods=['GET', 'POST'])
@@ -182,7 +197,10 @@ def logout():
 @app.route('/manage/events')
 @login_required
 def manage_events():
-    manager_events = Event.query.filter_by(user_creator_id=current_user.get_id()).order_by(Event.event_datetime)
+    if current_user.permission == Permission.ADMINISTRATOR:
+        manager_events = Event.query.order_by(Event.event_datetime).all()
+    else:
+        manager_events = Event.query.filter_by(user_creator_id=current_user.get_id()).order_by(Event.event_datetime)
     return render_template(
             'manage_events.html', navbar_manage_events_active='active',
             title=title, manager_events=manager_events, random=random, datetime=datetime
@@ -215,6 +233,11 @@ def manage_users():
 @login_required
 def manage_individual_administrator(username):
     return render_template('base.html', title=username)
+
+@app.route('/manage/stats')
+@login_required
+def manage_stats():
+    return render_template('base.html', title=title)
 
 # user management page
 @app.route('/manage/event_manager')
